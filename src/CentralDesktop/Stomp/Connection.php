@@ -165,13 +165,16 @@ class Connection implements LoggerAwareInterface {
      * @throws Exception
      */
     public
-    function connect($username = '', $password = '', $version = '1.0,1.1,1.2') {
+    function connect($username = '', $password = '', $version = '1.0,1.1,1.2', $vhost = null) {
         $this->_makeConnection();
         if ($username != '') {
             $this->_username = $username;
         }
         if ($password != '') {
             $this->_password = $password;
+        }
+        if ($vhost === null) {
+            $vhost = $this->connectedHost;
         }
         $headers = array('login' => $this->_username, 'passcode' => $this->_password);
         if ($this->clientId != null) {
@@ -180,7 +183,7 @@ class Connection implements LoggerAwareInterface {
 
         if ($version != '1.0') {
             $headers['accept-version'] = $version;
-            $headers['host']           = $this->connectedHost;
+            $headers['host']           = $vhost;
         }
 
         $frame = new Frame("CONNECT", $headers);
